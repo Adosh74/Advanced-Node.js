@@ -1,0 +1,12 @@
+{
+  "name": "advanced-node",
+  "version": "1.0.0",
+  "description": "not truly, but it is single thread in the sense that it has only one thread per process.",
+  "main": "threads.js",
+  "scripts": {
+    "start": "set UV_THREADPOOL_SIZE=5 && node threads.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
