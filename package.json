@@ -5,7 +5,8 @@
   "main": "threads.js",
   "scripts": {
     "start:threads": "set UV_THREADPOOL_SIZE=5 && node threads.js",
-    "start:async": "node async.js"
+    "start:async": "node async.js",
+    "start:multitask": "set UV_THREADPOOL_SIZE=5 && node multitask.js"
   },
   "keywords": [],
   "author": "",
