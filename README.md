@@ -122,4 +122,43 @@ doRequest()
 when we run this code, we will see all the requests will take the same amount of time to execute.
 
 ### Conclusion
-`Libuv` Delegates the task of creating threads to the `OS`, and the `OS` will create threads to handle the requests. 
+OS delegation means that `libuv` will delegate the task of creating threads to the `OS`, and the `OS` will decide how many threads to create and this tasks not related to the thread pool.
+
+### Multitask in Node
+#### Example
+```js
+const https = require('https');
+const crypto = require('crypto');
+const fs = require('fs');
+
+const start = Date.now();
+
+const doRequest = () => {
+    https.request('https://www.google.com', res => {
+        res.on('data', () => {})
+    
+        res.on('end', () => {
+            console.log('request: ', Date.now() - start);
+        })
+    }).end()
+}
+
+const doHash = () => {
+    crypto.pbkdf2('a', 'b', 100000, 512, 'sha512', () => {
+        console.log('Hash:', Date.now() - start);
+    })
+}
+
+doRequest();
+
+fs.readFile('multitask.js', 'utf-8', () => {
+    console.log('Fs:', Date.now() - start);
+});
+
+
+doHash()
+doHash()
+doHash()
+doHash()
+```
+when we run this code, we will see first request execute, then one of hashing tasks, then the file system task, and then the hashing tasks.
