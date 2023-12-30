@@ -6,9 +6,13 @@
   "scripts": {
     "start:threads": "set UV_THREADPOOL_SIZE=5 && node threads.js",
     "start:async": "node async.js",
-    "start:multitask": "set UV_THREADPOOL_SIZE=5 && node multitask.js"
+    "start:multitask": "set UV_THREADPOOL_SIZE=5 && node multitask.js",
+    "start:dev": "node index.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
