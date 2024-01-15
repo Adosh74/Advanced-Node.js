@@ -162,3 +162,77 @@ doHash()
 doHash()
 ```
 when we run this code, we will see first request execute, then one of hashing tasks, then the file system task, and then the hashing tasks.
+
+# Node Performance
+
+## Clustering in Node
+### What is clustering?
+clustering is a way to take a single instance of `Node` and duplicate it, and have all of these instances of `Node` running simultaneously.
+
+## Example
+```js
+const express = require('express');
+
+const app = express();
+const doWork = (duration) => {
+    const start = Date.now();
+    while (Date.now() - start < duration) {}
+}
+
+app.get('/', (req, res) => {
+    doWork(5000);
+    res.status(200).send('Hi')
+} )
+
+app.listen(4000, () => {
+    console.log('app running on port 4000');
+})
+```
+This code will take 5 seconds to execute the `doWork` function, and then it will send the response. if in this time we send another request, it will wait for the first request to finish, and then it will execute the second request.
+
+**look benchmark without clustering for 100 requests**:
+
+![image](./assets/without-cluster.JPG)
+
+```js
+const cluster = require('cluster');
+const os = require('os');
+const express = require('express');
+
+
+if (cluster.isMaster) {
+    console.log(`Master ${process.pid} is running`);
+    const cpuCount = os.cpus().length;
+    console.log(`Forking for ${cpuCount} CPUs`);
+    for (let i = 0; i < cpuCount; i++) {
+        cluster.fork();
+    }    
+} else {
+    
+    const app = express();
+    const doWork = (duration) => {
+        const start = Date.now();
+        while (Date.now() - start < duration) {}
+    }
+
+    app.get('/', (req, res) => {
+        doWork(5000);
+        res.status(200).send('Hi')
+    } )
+
+    app.get('/fast', (req, res) => {
+        res.status(200).send('Fast')
+    })
+
+    app.listen(4000, () => {
+        console.log('app running on port 4000');
+    })
+}
+```
+when we run this code, we will see that the master process will fork four workers, and each worker will execute the code inside the else block.
+
+now if we send a request to the `/` route, it will take 5 seconds to execute the `doWork` function, and then it will send the response. if in this time we send another request, it will be handled by another worker, and it will send the response immediately.
+
+**look benchmark with clustering for 100 requests and node instances**:
+
+![image](./assets/node-instances.JPG) ![image](./assets/with-cluster.JPG)
