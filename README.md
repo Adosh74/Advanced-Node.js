@@ -1,5 +1,5 @@
 # The internals of `Node`
-## Are `Node` is single thread?
+### Are `Node` is single thread?
 not truly, but it is single thread in the sense that it has only one thread per process.
 
 ### Example
